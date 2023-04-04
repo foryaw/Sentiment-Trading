@@ -11,9 +11,12 @@ import matplotlib.ticker as ticker
 from datetime import datetime, timedelta
 
 #%%
+# Set global variables
 START = '2016-01-01'
 END = '2021-05-19'
 YEAR = int(START[:4])
+TOP = 0.8
+BOTTOM = 0.1
 
 #%%
 # Define a function that calculates the return of a given portfolio over a specified time period
@@ -77,9 +80,9 @@ def select_portfolio(dynamic_df):
     # Sort the DataFrame by 'PN' in descending order
     dynamic_df = dynamic_df.sort_values(by=['PN'], ascending=False)
     # Calculate the 90th percentile of 'PN'
-    top_10_percentile = dynamic_df['PN'].quantile(0.9)
+    top_10_percentile = dynamic_df['PN'].quantile(TOP)
     # Calculate the 10th percentile of 'PN'
-    bottom_10_percentile = dynamic_df['PN'].quantile(0.1)
+    bottom_10_percentile = dynamic_df['PN'].quantile(BOTTOM)
     # Get the list of tickers in the top 10th percentile of 'PN'
     long = dynamic_df[dynamic_df['PN'] > top_10_percentile]['ticker'].to_list()
     # Get the list of tickers in the bottom 10th percentile of 'PN'
