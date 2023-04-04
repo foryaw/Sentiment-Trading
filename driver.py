@@ -277,7 +277,7 @@ for index, row in df.iterrows():
 overall_return -= 1
 # Print the overall return for the analysis period   
 print(f"overall return over period from {START} to {END}\n= {overall_return:.4%}")
-strategy.to_csv('./strategy_dailyReturn.csv')
+strategy.to_csv('./strategy_daily_return.csv')
 
 #%%
 sp500 = yf.download(tickers='^GSPC', start=START, end=END, interval='1d')
