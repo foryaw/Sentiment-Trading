@@ -51,9 +51,11 @@ def portfolio_return(portfolio, weights, start_date, end_date):
         # Multiply the daily return for each date by the weight of the corresponding ticker
         if p_returns is None:
             p_returns = hist_data.loc[:, ['Date', 'Daily Return']]
-            p_returns['Daily Return'] = p_returns['Daily Return'] * (weights[ticker])
+            p_returns.reset_index(drop=True, inplace=True)
+            p_returns['Daily Return'] = p_returns['Daily Return'].mul((weights[ticker]), fill_value=0)
         else:
-            return_vector = hist_data['Daily Return'] * (weights[ticker])
+            return_vector = hist_data['Daily Return'].reset_index(drop=True).mul((weights[ticker]), fill_value=0)
+            # return_vector = hist_data['Daily Return'].mul((weights[ticker]), fill_value=0)
             p_returns['Daily Return'] = p_returns['Daily Return'].add(return_vector, fill_value=0)
     p_returns = p_returns[p_returns['Date'] >= start_date]
     p_returns = p_returns[p_returns['Date'] <= end_date]
@@ -63,17 +65,39 @@ def portfolio_return(portfolio, weights, start_date, end_date):
     return p_returns['Cumulative Return'].iloc[len(p_returns) - 1], p_returns[['Date', 'Daily Return']]
 
 # Define a function that returns a dictionary of weights for each ticker in a portfolio
-def get_weights(portfolio, MCap=None):
+def get_weights(portfolio, start_date=None, end_date=None):
     # If no market cap data is specified, assign equal weights to each ticker
-    if MCap is None:
+    if start_date is None and end_date is None:
         total = len(portfolio[0] + portfolio[1])
         w_long = {ticker: 1 / total for ticker in portfolio[0]}
         w_short = {ticker: -1 / total for ticker in portfolio[1]}
     # Otherwise, calculate the weights based on the market cap of each ticker
     else:
-        total = sum(list(map(lambda long: MCap[long] ,portfolio[0]))) - sum(list(map(lambda short: MCap[short] ,portfolio[1])))
-        w_long = dict(map(lambda key: (key, MCap[key] / total), portfolio[0]))
-        w_short = dict(map(lambda key: (key, -1 * MCap[key] / total), portfolio[1]))
+        df = pd.read_excel('./crsp data.xlsx')
+        df['DlyCalDt'] = pd.to_datetime(df['DlyCalDt'])
+        df = df[df['DlyCalDt'] >= start_date]
+        df = df[df['DlyCalDt'] <= end_date]
+        total = pd.Series(dtype='float64')
+        w_long = {}
+        w_short = {}
+        for ticker in portfolio[0] + portfolio[1]:
+            ticker_df = df[df['Ticker'] == ticker]
+            ticker_df.reset_index(drop=True, inplace=True)
+            total = total.add(ticker_df['DlyCap'], fill_value=0)
+
+        for ticker in portfolio[0]:
+            ticker_df = df[df['Ticker'] == ticker]
+            ticker_df.reset_index(drop=True, inplace=True)
+            w_long[ticker] = ticker_df['DlyCap'].div(total)
+        
+        for ticker in portfolio[1]:
+            ticker_df = df[df['Ticker'] == ticker]
+            ticker_df.reset_index(drop=True, inplace=True)
+            w_short[ticker] = ticker_df['DlyCap'].div(total).mul(-1)
+        # total = sum(list(map(lambda long: MCap[long] ,portfolio[0]))) - sum(list(map(lambda short: MCap[short] ,portfolio[1])))
+        # w_long = dict(map(lambda key: (key, MCap[key] / total), portfolio[0]))
+        # w_short = dict(map(lambda key: (key, -1 * MCap[key] / total), portfolio[1]))
+
     return w_long | w_short
 
 def select_portfolio(dynamic_df):
