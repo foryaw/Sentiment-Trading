@@ -15,8 +15,9 @@ from datetime import datetime, timedelta
 START = '2016-01-01'
 END = '2021-05-19'
 YEAR = int(START[:4])
-TOP = 0.8
+TOP = 0.9
 BOTTOM = 0.1
+equal_weighted = True
 
 #%%
 # Define a function that calculates the return of a given portfolio over a specified time period
@@ -55,7 +56,6 @@ def portfolio_return(portfolio, weights, start_date, end_date):
             p_returns['Daily Return'] = p_returns['Daily Return'].mul((weights[ticker]), fill_value=0)
         else:
             return_vector = hist_data['Daily Return'].reset_index(drop=True).mul((weights[ticker]), fill_value=0)
-            # return_vector = hist_data['Daily Return'].mul((weights[ticker]), fill_value=0)
             p_returns['Daily Return'] = p_returns['Daily Return'].add(return_vector, fill_value=0)
     p_returns = p_returns[p_returns['Date'] >= start_date]
     p_returns = p_returns[p_returns['Date'] <= end_date]
@@ -73,31 +73,39 @@ def get_weights(portfolio, start_date=None, end_date=None):
         w_short = {ticker: -1 / total for ticker in portfolio[1]}
     # Otherwise, calculate the weights based on the market cap of each ticker
     else:
-        df = pd.read_excel('./crsp data.xlsx')
-        df['DlyCalDt'] = pd.to_datetime(df['DlyCalDt'])
-        df = df[df['DlyCalDt'] >= start_date]
-        df = df[df['DlyCalDt'] <= end_date]
-        total = pd.Series(dtype='float64')
         w_long = {}
         w_short = {}
+        total = pd.Series(dtype='float64')
         for ticker in portfolio[0] + portfolio[1]:
-            ticker_df = df[df['Ticker'] == ticker]
+            ticker_df = pd.read_csv(f'./crsp data/{ticker.strip()}_crsp_data.csv', header=0)
+            ticker_df['DlyCalDt'] = pd.to_datetime(ticker_df['DlyCalDt'])
+            ticker_df = ticker_df[ticker_df['DlyCalDt'] >= start_date]
+            ticker_df = ticker_df[ticker_df['DlyCalDt'] <= end_date]
             ticker_df.reset_index(drop=True, inplace=True)
             total = total.add(ticker_df['DlyCap'], fill_value=0)
+            # if ticker in portfolio[0]:
+            #     total = total.add(ticker_df['DlyCap'], fill_value=0)
+            # else:
+            #     total = total.subtract(ticker_df['DlyCap'], fill_value=0)
 
         for ticker in portfolio[0]:
-            ticker_df = df[df['Ticker'] == ticker]
+            ticker_df = pd.read_csv(f'./crsp data/{ticker.strip()}_crsp_data.csv', header=0)
+            ticker_df['DlyCalDt'] = pd.to_datetime(ticker_df['DlyCalDt'])
+            ticker_df = ticker_df[ticker_df['DlyCalDt'] >= start_date]
+            ticker_df = ticker_df[ticker_df['DlyCalDt'] <= end_date]
             ticker_df.reset_index(drop=True, inplace=True)
             w_long[ticker] = ticker_df['DlyCap'].div(total)
         
         for ticker in portfolio[1]:
-            ticker_df = df[df['Ticker'] == ticker]
+            ticker_df = pd.read_csv(f'./crsp data/{ticker.strip()}_crsp_data.csv', header=0)
+            ticker_df['DlyCalDt'] = pd.to_datetime(ticker_df['DlyCalDt'])
+            ticker_df = ticker_df[ticker_df['DlyCalDt'] >= start_date]
+            ticker_df = ticker_df[ticker_df['DlyCalDt'] <= end_date]
             ticker_df.reset_index(drop=True, inplace=True)
             w_short[ticker] = ticker_df['DlyCap'].div(total).mul(-1)
-        # total = sum(list(map(lambda long: MCap[long] ,portfolio[0]))) - sum(list(map(lambda short: MCap[short] ,portfolio[1])))
-        # w_long = dict(map(lambda key: (key, MCap[key] / total), portfolio[0]))
-        # w_short = dict(map(lambda key: (key, -1 * MCap[key] / total), portfolio[1]))
-
+        print('total\n', total)
+        print("long\n", w_long)
+        print("short\n", w_short)
     return w_long | w_short
 
 def select_portfolio(dynamic_df):
@@ -138,6 +146,22 @@ def download_hist_prices(tickers: pd.Series):
             print(f"removed {invalid_ticker}")
     # Return the list of tickers
     return tickers
+
+def prepare_crsp():
+    if not os.path.exists('./crsp data.csv'):
+        if os.path.exists('./csrp data.xlsx'):
+            xlsx = pd.read_excel('./csrp data.xlsx')
+            xlsx.to_csv('./crsp data.csv', index=False)
+
+    if not os.path.exists('./crsp data'):
+        os.mkdir('./crsp data')
+        
+    crsp = pd.read_csv('./crsp data.csv')
+    tickers = crsp['Ticker'].unique()
+    for ticker in tickers:
+        if not os.path.exists(f'./crsp data/{ticker}_crsp_data.csv'):
+            df = crsp[crsp['Ticker'] == ticker]
+            df.to_csv(f'./crsp data/{ticker}_crsp_data.csv', index=False)
 
 def get_measurement(ticker, measurement):
     # Make a GET request to the Yahoo Finance page for the specified ticker
@@ -185,6 +209,7 @@ def calculate_market_cap(df):
 #%%
 # read data from Excel file
 df = pd.read_csv("./sp100.csv", header=0)
+prepare_crsp()
 
 #%%
 # get unique tickers and drop unnecessary columns
@@ -256,7 +281,7 @@ for index, row in df.iterrows():
     end_date = row['date']
     # If the start date is not the same as the end date, calculate the portfolio return
     # Get the weights for the current portfolio
-    weights = get_weights(portfolio)
+    weights = get_weights(portfolio) if equal_weighted else get_weights(portfolio, start_date, end_date)
     # Calculate the return for the current portfolio
     p_returns = portfolio_return(portfolio, weights, start_date, end_date)
     if p_returns is None: continue
@@ -284,7 +309,7 @@ sp500 = yf.download(tickers='^GSPC', start=START, end=END, interval='1d')
 sp500['Daily Return'] = sp500['Adj Close'].pct_change()
 sp500['Cumulative Return'] = (1 + sp500['Daily Return']).cumprod() - 1
 sp500.reset_index(inplace=True)
-strategy = pd.read_csv('./strategy_dailyReturn.csv')
+strategy = pd.read_csv('./strategy_daily_return.csv')
 strategy['Cumulative Return'] = (1 + strategy['Daily Return']).cumprod() - 1
 
 sp500['Date'] = pd.to_datetime(sp500['Date'])
