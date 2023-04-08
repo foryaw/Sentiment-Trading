@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 # Set global variables
 START = '2016-01-01'
 END = '2020-12-31'
-TOP = 0.9
+TOP = 0.8
 BOTTOM = 0.1
 # equal_weight = True
 
@@ -170,7 +170,7 @@ def cal_metrices(daily_return_vector: pd.Series, start_date, end_date, risk_free
     print(f'overall return = {overall_return:.4%}')
     print(f'annual return = {annual_return:.4%}')
     print(f'anuual vol = {annual_vol:.4f}')
-    print(f'sharpe ratio = {sharpe_ratio}')
+    print(f'sharpe ratio = {sharpe_ratio:4f}')
     return annual_return, annual_vol, sharpe_ratio
 
 def select_portfolio(dynamic_df):
@@ -302,7 +302,6 @@ tickers = ['ABT', 'ABBV', 'ACN', 'CAN', 'ADBE', 'AMD', 'AMZN', 'AIG', 'AMT', 'AM
 # filter dataFrame to only include valid tickers
 df = df[df['ticker'].isin(tickers)]
 
-#%%
 dynamic_df = df.copy(deep=True)
 # Sort the original dataframe by date
 dynamic_df.sort_values('date', inplace=True)
@@ -404,9 +403,10 @@ plt.plot(sp500['Date'], sp500['Cumulative Return'], label='SP500')
 
 plt.xlim(datetime.strptime(START, '%Y-%m-%d'), datetime.strptime(END, '%Y-%m-%d'))
 # automatically adjust y-axis limits
-plt.autoscale(enable=True, axis='y')
+plt.autoscale(enable=True, axis='both')
 plt.gca().yaxis.set_major_formatter(ticker.PercentFormatter())
 
 plt.legend()
+plt.savefig(f'./crsp_result_{round((1-TOP)*100)}_{round(BOTTOM*100)}.png')
 plt.show()
-# plt.savefig(f'./crsp_result_{(1-TOP)*100}_{BOTTOM*100}_v.png')
+plt.close()
