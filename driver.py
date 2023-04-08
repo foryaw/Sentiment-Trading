@@ -37,15 +37,15 @@ def portfolio_return(portfolio, weights, start_date, end_date):
     for ticker in tickers:
         ticker = ticker.strip()
         # Load historical price data for the ticker from a CSV file
-        hist_data = pd.read_csv(f"./historical prices/{ticker}_hist_price.csv") # yf specific
-        # hist_data = pd.read_csv(f'./crsp data/{ticker}_crsp_data.csv') #crsp specific
-        # hist_data.rename(columns={'DlyCalDt': 'Date', 'DlyRet': 'Daily Return'}, inplace=True) #crsp specific
+        # hist_data = pd.read_csv(f"./historical prices/{ticker}_hist_price.csv") # yf specific
+        hist_data = pd.read_csv(f'./crsp data/{ticker}_crsp_data.csv') #crsp specific
+        hist_data.rename(columns={'DlyCalDt': 'Date', 'DlyRet': 'Daily Return'}, inplace=True) #crsp specific
         # Convert the 'date' column to datetime objects
         hist_data['Date'] = pd.to_datetime(hist_data['Date'])
         # Filter the data to exclude dates after the end_date
         hist_data = hist_data[hist_data['Date'] <= end_date]
         # Calculate the daily return for each date
-        hist_data['Daily Return'] = hist_data['Adj Close'].pct_change() # yf specific
+        # hist_data['Daily Return'] = hist_data['Adj Close'].pct_change() # yf specific
         # Remove any rows with missing data
         hist_data.dropna(inplace=True)
         # Filter the data to only include dates on or after the start_date
@@ -222,9 +222,9 @@ def prepare_crsp():
         os.mkdir('./crsp data')
         
     crsp = pd.read_csv('./crsp data.csv')
-    tickers = crsp['Ticker'].unique()
+    tickers = pd.Series(crsp['Ticker'].unique())
     tickers.apply(lambda ticker: ticker.strip())
-    for ticker in tickers:
+    for ticker in tickers.to_list():
         df = crsp[crsp['Ticker'] == ticker]
         df.to_csv(f'./crsp data/{ticker}_crsp_data.csv', index=False)
 
@@ -302,12 +302,14 @@ tickers = ['ABT', 'ABBV', 'ACN', 'CAN', 'ADBE', 'AMD', 'AMZN', 'AIG', 'AMT', 'AM
 # filter dataFrame to only include valid tickers
 df = df[df['ticker'].isin(tickers)]
 # filter dataFrame to only include dates after {YEAR-1}-09-01
-df = df[df['date'] > f'{YEAR-1}-06-01']
+# df = df[df['date'] > f'{YEAR-1}-06-01']
 
 #%%
+dynamic_df = df.copy(deep=True)
 # Sort the original dataframe by date
-dynamic_df = df.sort_values('date')
+dynamic_df.sort_values('date', inplace=True)
 # filter DataFrame to only include dates before START
+dynamic_df = dynamic_df[dynamic_df['date'] >= f'{YEAR-1}-06-01']
 dynamic_df = dynamic_df[dynamic_df['date'] < START]
 # Group the sorted dataframe by ticker
 grouped_df = dynamic_df.groupby('ticker')
@@ -321,7 +323,10 @@ dynamic_df = dynamic_df[['date', 'ticker', 'PN']].sort_values('date')
 dynamic_df.reset_index(drop=True, inplace=True)
 # Remove any rows with missing values
 dynamic_df.dropna(inplace=True)
-
+# Filter the dataframe to only include entries after start date
+df = df[df['date'] >= START]
+# Sort df by date
+df.sort_values(by='date', inplace=True)
 #%%
 equal_strategy = pd.DataFrame(columns=['Date', 'Daily Return'])
 val_strategy = pd.DataFrame(columns=['Date', 'Daily Return'])
@@ -334,10 +339,6 @@ for i in range(2):
     cur_dynamic_df = dynamic_df.copy(deep=True)
     # Select the portfolio based on initial universe
     portfolio = select_portfolio(cur_dynamic_df)
-    # Filter the dataframe to only include entries after start date
-    df = df[df['date'] >= start_date]
-    # Sort df by date
-    df.sort_values(by='date', inplace=True)
     # Initialize the overall return variable
     overall_return = 1
     equal_weight = True if i == 0 else False
@@ -373,7 +374,8 @@ for i in range(2):
     overall_return -= 1
     # Print the overall return for the analysis period   
     print(f"overall return over period from {START} to {END}\n= {overall_return:.4%}")
-    strategy.to_csv('./eq_strategy_daily_return.csv') if i == 0 else strategy.to_csv('./val_strategy_daily_return.csv')
+    strategy.to_csv('./eq_strategy_daily_return.csv') if equal_weight else strategy.to_csv('./val_strategy_daily_return.csv')
+
 #%%
 sp500 = yf.download(tickers='^GSPC', start=START, end=END, interval='1d')
 sp500['Daily Return'] = sp500['Adj Close'].pct_change()
