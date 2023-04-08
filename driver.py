@@ -13,10 +13,10 @@ from datetime import datetime, timedelta
 #%%
 # Set global variables
 START = '2016-01-01'
-END = '2021-05-19'
+END = '2020-12-31'
 TOP = 0.9
 BOTTOM = 0.1
-equal_weight = True
+# equal_weight = True
 
 #%%
 # Define a function that calculates the return of a given portfolio over a specified time period
@@ -301,8 +301,6 @@ tickers = ['ABT', 'ABBV', 'ACN', 'CAN', 'ADBE', 'AMD', 'AMZN', 'AIG', 'AMT', 'AM
 #%%
 # filter dataFrame to only include valid tickers
 df = df[df['ticker'].isin(tickers)]
-# filter dataFrame to only include dates after {YEAR-1}-09-01
-# df = df[df['date'] > f'{YEAR-1}-06-01']
 
 #%%
 dynamic_df = df.copy(deep=True)
@@ -327,6 +325,8 @@ dynamic_df.dropna(inplace=True)
 df = df[df['date'] >= START]
 # Sort df by date
 df.sort_values(by='date', inplace=True)
+df.reset_index(drop=True, inplace=True)
+print(df)
 #%%
 equal_strategy = pd.DataFrame(columns=['Date', 'Daily Return'])
 val_strategy = pd.DataFrame(columns=['Date', 'Daily Return'])
@@ -347,6 +347,7 @@ for i in range(2):
 #%%
     # Loop through each row in the DataFrame
     for index, row in df.iterrows():
+        if row['date'] > datetime.strptime(END, '%Y-%m-%d'): break
         # Set the start date to be the end date of the previous row
         start_date = end_date + timedelta(days=1)
         # Set the end date to be the date of the current row
@@ -408,3 +409,4 @@ plt.gca().yaxis.set_major_formatter(ticker.PercentFormatter())
 
 plt.legend()
 plt.show()
+# plt.savefig(f'./crsp_result_{(1-TOP)*100}_{BOTTOM*100}_v.png')
