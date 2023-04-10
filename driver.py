@@ -69,7 +69,6 @@ def portfolio_return(portfolio, weights, start_date, end_date):
 
 # Define a function that returns a dictionary of weights for each ticker in a portfolio
 def get_weights(portfolio, start_date, end_date, equal_weight):
-    # If no market cap data is specified, assign equal weights to each ticker
     w_long = {}
     w_short = {}
     total_long = pd.Series(dtype='str') if equal_weight else pd.Series(dtype='float64')
@@ -116,6 +115,9 @@ def get_weights(portfolio, start_date, end_date, equal_weight):
         # w_short = {ticker: -1 / total for ticker in portfolio[1]}
 
     else:
+        start_date = start_date + timedelta(-1)
+        end_date = end_date + timedelta(-1)
+        
         for index in range(len(portfolio)):
             for ticker in portfolio[index]:
                 ticker = ticker.strip()
