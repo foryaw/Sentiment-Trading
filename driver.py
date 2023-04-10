@@ -326,6 +326,7 @@ df = df[df['date'] >= START]
 df.sort_values(by='date', inplace=True)
 df.reset_index(drop=True, inplace=True)
 print(df)
+
 #%%
 equal_strategy = pd.DataFrame(columns=['Date', 'Daily Return'])
 val_strategy = pd.DataFrame(columns=['Date', 'Daily Return'])
@@ -371,6 +372,18 @@ for i in range(2):
         
         # Select the portfolio using the updated dynamic_df
         portfolio = select_portfolio(cur_dynamic_df)
+
+    start_date = end_date + timedelta(days=1)
+    # Set the end date to be the date of the current row
+    end_date = datetime.strptime(END, '%Y-%m-%d')
+    weights = get_weights(portfolio, start_date, end_date, equal_weight)
+    # Calculate the return for the current portfolio
+    p_returns = portfolio_return(portfolio, weights, start_date, end_date)
+    if p_returns is None: continue
+    overall_return *= 1 + p_returns[0]
+    print(f'overall return up to {end_date} = {overall_return - 1:.4%}')
+    strategy = pd.concat([strategy,p_returns[1]],ignore_index=True)
+
     overall_return -= 1
     # Print the overall return for the analysis period   
     print(f"overall return over period from {START} to {END}\n= {overall_return:.4%}")
