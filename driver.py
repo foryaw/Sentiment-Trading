@@ -374,25 +374,27 @@ for i in range(2):
     overall_return -= 1
     # Print the overall return for the analysis period   
     print(f"overall return over period from {START} to {END}\n= {overall_return:.4%}")
-    strategy.to_csv('./eq_strategy_daily_return.csv') if equal_weight else strategy.to_csv('./val_strategy_daily_return.csv')
+    strategy.to_csv(f'./eq_strategy_daily_return_{round((1-TOP)*100)}_{round(BOTTOM*100)}.csv') if equal_weight else strategy.to_csv(f'./val_strategy_daily_return_{round((1-TOP)*100)}_{round(BOTTOM*100)}.csv')
 
 #%%
 sp500 = yf.download(tickers='^GSPC', start=START, end=END, interval='1d')
 sp500['Daily Return'] = sp500['Adj Close'].pct_change()
 sp500['Cumulative Return'] = (1 + sp500['Daily Return']).cumprod() - 1
 sp500.reset_index(inplace=True)
-equal_strategy = pd.read_csv('./eq_strategy_daily_return.csv')
+equal_strategy = pd.read_csv(f'./eq_strategy_daily_return_{round((1-TOP)*100)}_{round(BOTTOM*100)}.csv')
 equal_strategy['Cumulative Return'] = (1 + equal_strategy['Daily Return']).cumprod() - 1
-val_strategy = pd.read_csv('./val_strategy_daily_return.csv')
+val_strategy = pd.read_csv(f'./val_strategy_daily_return_{round((1-TOP)*100)}_{round(BOTTOM*100)}.csv')
 val_strategy['Cumulative Return'] = (1 + val_strategy['Daily Return']).cumprod() - 1
 
 sp500['Date'] = pd.to_datetime(sp500['Date'])
 equal_strategy['Date'] = pd.to_datetime(equal_strategy['Date'])
 val_strategy['Date'] = pd.to_datetime(val_strategy['Date'])
 
-print('metrices of equal-weighted strategy:')
+print('metrices of S&P500:')
+sp500_metrices = cal_metrices(sp500['Daily Return'], START, END)
+print(f'\nmetrices of equal-weighted strategy_{round((1-TOP)*100)}_{round(BOTTOM*100)}:')
 equal_metrices = cal_metrices(equal_strategy['Daily Return'], START, END)
-print('\nmetrices of value-weighted strategy:')
+print(f'\nmetrices of value-weighted strategy_{round((1-TOP)*100)}_{round(BOTTOM*100)}:')
 val_metices = cal_metrices(val_strategy['Daily Return'], START, END)
 
 #%%
