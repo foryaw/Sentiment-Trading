@@ -36,10 +36,10 @@ Two long-short portfolio with net zero exposure are constructed based on PN scor
 
 Using driver.py, we are able to obtain the daily return with the following result:
 #### Portfolio 1 - Long Top 10-percentile, Short Bottom 10-percentile
-<img src=https://github.com/foryaw/sentiment-trading/blob/master/2.%20backtesting/crsp_result_10_10.png>
+<img src=https://github.com/foryaw/sentiment-trading/blob/master/2.%20backtesting/crsp_result_10_10.jpg>
 
 #### Portfolio 2 - Long Top 20-percentile, Short Bottom 10-percentile
-<img src=https://github.com/foryaw/sentiment-trading/blob/master/2.%20backtesting/crsp_result_20_10.png>
+<img src=https://github.com/foryaw/sentiment-trading/blob/master/2.%20backtesting/crsp_result_20_10.jpg>
 
 Both value weighted and equal weighted portfolios were created during backtesting, the daily return data is stored in:
 <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1. eq_strategy_daily_return_10_10.csv
@@ -67,5 +67,10 @@ Noted that the Top 20 and Bottom 10 portfolio is chosen for the presentation, pl
 <img src=https://github.com/foryaw/sentiment-trading/blob/master/image/analysis.JPG>
 
 The complete return analysis is presented in the final report.
+
+
+
+
+
 
 
