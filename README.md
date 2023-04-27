@@ -9,7 +9,7 @@ In this repository, we stored the codes, data and results for the three stages o
 <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3. Return analysis
 
 ### Pre-processing
-1. Extract and download quarterly earning call transcripts of S&P 100 constitute companies from Bloomberg from 2016 to 2020. 
+1. Extract and download quarterly earning call transcripts of S&P 100 constitute companies from Bloomberg from 2016 to 2020
 2. Convert the earnings call transcript from pdf format to txt (using totxt.py)
 3. Using the FinBERT model to read the earning calls transcripts and generate sentiment classification (i.e. positive, neutral or negative) from the text. This process is repeated for each constitutes company and each quarter. (using sentiment generation.py)
 4. A net value technique, PN Score is reported for each company in S&P 100 quarterly, details are shown below:
@@ -25,5 +25,47 @@ The graph below serves for better illustration purposes.
 
 The result is stored in sp100.csv, which contains the quarterly sentiment scores for each company from 2016 to 2020.
 
+### Backtesting
+Investment universe: S&P100 constitutes
+<br/>Backtesting timeframe: 2016 - 2020
+<br/>Data source: CRSP database, PN scores generated in preprocessing stage
+
+Two long-short portfolio with net zero exposure are constructed based on PN score:
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Portfolio 1: Long 50% in Top 10-percentile, Short 50% in Bottom 10-percentile in PN score
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Portfolio 2: Long 50% in Top 20-percentile, Short 50% in Bottom 10-percentile in PN score
+
+Using driver.py, we are able to obtain the daily return with the following result:
+#### Portfolio 1 - Long Top 10-percentile, Short Bottom 10-percentile
+<img src=https://github.com/foryaw/sentiment-trading/blob/master/2.%20backtesting/crsp_result_10_10.png>
+
+#### Portfolio 2 - Long Top 20-percentile, Short Bottom 10-percentile
+<img src=https://github.com/foryaw/sentiment-trading/blob/master/2.%20backtesting/crsp_result_20_10.png>
+
+Both value weighted and equal weighted portfolios were created during backtesting, the daily return data is stored in:
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1. eq_strategy_daily_return_10_10.csv
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2. val_strategy_daily_return_10_10.csv
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3. eq_strategy_daily_return_20_10.csv
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4. val_strategy_daily_return_20_10.csv
+
+
+Noted that the Top 20 and Bottom 10 portfolio is chosen for the presentation, please refers to the final report for the rationales.
+
+
+### Return analysis
+#### Portfolio choice: Long Top 20-percentile, Short Bottom 10-percentile
+
+1. The daily returns are converted to monthly return for analysis, stored in: 
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1. eq monthly 10-10.csv
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2. eq monthly 20-10.csv
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3. val monthly 10-10.csv
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4. val monthly 20-10.csv
+2. The monthly returns are passed to Return Analysis.xlsm for analysis, which contains:
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1. CAPM and Carharts regression tool
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2. Risk measure analysis tool
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3. Alpha distribution analysis tool
+#### Result (excerpt):
+<img src=https://github.com/foryaw/sentiment-trading/blob/master/image/analysis.JPG>
+
+The complete return analysis is presented in the final report.
 
 
