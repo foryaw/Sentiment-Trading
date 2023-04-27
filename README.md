@@ -9,4 +9,21 @@ In this repository, we stored the codes, data and results for the three stages o
 <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3. Return analysis
 
 ### Pre-processing
+1. Extract and download quarterly earning call transcripts of S&P 100 constitute companies from Bloomberg from 2016 to 2020. 
+2. Convert the earnings call transcript from pdf format to txt (using totxt.py)
+3. Using the FinBERT model to read the earning calls transcripts and generate sentiment classification (i.e. positive, neutral or negative) from the text. This process is repeated for each constitutes company and each quarter. (using sentiment generation.py)
+4. A net value technique, PN Score is reported for each company in S&P 100 quarterly, details are shown below:
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;P = numbers of positive sentences 
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;N = numbers of negative sentences 
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PN Score = (P – N) / (P + N) 
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;where
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;P - N: difference between the number of positive and negative sentences
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1 / (P + N): normalizing this difference by the total number of sentences in the transcript 
+
+The graph below serves for better illustration purposes. 
+<br/><img src="https://github.com/foryaw/sentiment-trading/blob/master/image/sentiment.JPG" width="550" height="190">
+
+The result is stored in sp100.csv, which contains the quarterly sentiment scores for each company from 2016 to 2020.
+
+
 
