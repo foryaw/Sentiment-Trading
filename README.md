@@ -8,6 +8,22 @@ In this repository, we stored the codes, data and results for the three stages o
 <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2. Backtesting
 <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3. Return analysis
 
+### Instruction
+To install the packages needed for the project, please run the following command in your terminal:
+```
+pip install -r requirements.txt
+```
+#### Package List
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - beautifulsoup4 v4.12.0
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - matplotlib v3.7.1
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - nltk v3.8.1
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - numpy v1.24.2
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - pandas v1.5.3
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - PyPDF2 v3.0.1
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - Requests v2.29.0
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - transformers v4.28.1
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - yfinance v0.2.13
+
 ### Pre-processing
 1. Extract and download quarterly earning call transcripts of S&P 100 constitute companies from Bloomberg from 2016 to 2020
 2. Convert the earnings call transcript from pdf format to txt (using totxt.py)
@@ -68,21 +84,7 @@ Noted that the Top 20 and Bottom 10 portfolio is chosen for the presentation, pl
 
 The complete return analysis is presented in the final report.
 
-### Instruction
-To install the packages needed for the project, please run the following command in your terminal:
-```
-pip install -r requirements.txt
-```
-#### Package List
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - beautifulsoup4 v4.12.0
-<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - matplotlib v3.7.1
-<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - nltk v3.8.1
-<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - numpy v1.24.2
-<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - pandas v1.5.3
-<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - PyPDF2 v3.0.1
-<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - Requests v2.29.0
-<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - transformers v4.28.1
-<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - yfinance v0.2.13
+
 
 
 
