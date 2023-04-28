@@ -68,9 +68,21 @@ Noted that the Top 20 and Bottom 10 portfolio is chosen for the presentation, pl
 
 The complete return analysis is presented in the final report.
 
-
-
-
+### Instruction
+To install the packages needed for the project, please run the following command in your terminal:
+```
+pip install -r requirements.txt
+```
+#### Package List
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - beautifulsoup4 v4.12.0
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - matplotlib v3.7.1
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - nltk v3.8.1
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - numpy v1.24.2
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - pandas v1.5.3
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - PyPDF2 v3.0.1
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - Requests v2.29.0
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - transformers v4.28.1
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - yfinance v0.2.13
 
 
 
