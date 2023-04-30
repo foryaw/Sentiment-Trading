@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 # Set global variables
 START = '2016-01-01'
 END = '2020-12-31'
-TOP = 0.9
+TOP = 0.8
 BOTTOM = 0.1
 # equal_weight = True
 
